@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import validator from 'validator';
 
+import PassInput from './PassInput';
 import useForm from './useForm';
 
 interface FormValues {
@@ -97,42 +98,20 @@ const SignUp: React.FC<{
           </label>
         )}
       </div>
-      <div className="form-control w-full">
-        <input
-          type="password"
-          placeholder="Password"
-          className={`input-bordered input ${
-            errors.password ? 'input-error' : ''
-          }`}
-          name="password"
-          value={values.password}
-          onChange={handleChange}
-        />
-        {errors.password && (
-          <label className="label pt-0">
-            <span className="label-text-alt text-red-600  ">
-              {errors.password}
-            </span>
-          </label>
-        )}
-        <input
-          type="password"
-          placeholder="Confirm password"
-          className={`input-bordered input mt-2 ${
-            errors.confirmPassword ? 'input-error' : ''
-          }`}
-          name="confirmPassword"
-          value={values.confirmPassword}
-          onChange={handleChange}
-        />
-        {errors.confirmPassword && (
-          <label className="label pt-0">
-            <span className="label-text-alt text-red-600  ">
-              {errors.confirmPassword}
-            </span>
-          </label>
-        )}
-      </div>
+      <PassInput
+        error={errors.password}
+        name="password"
+        placeholder="Password"
+        value={values.password}
+        handleChange={handleChange}
+      />
+      <PassInput
+        error={errors.confirmPassword}
+        name="confirmPassword"
+        placeholder="Confirm password"
+        value={values.confirmPassword}
+        handleChange={handleChange}
+      />
       <div className="form-control mb-8 w-full">
         <button
           className={`btn-primary btn ${isLoading ? 'loading' : ''}`}

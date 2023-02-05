@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import validator from 'validator';
 
+import PassInput from './PassInput';
 import useForm from './useForm';
 
 interface FormValues {
@@ -95,24 +96,13 @@ const Login: React.FC<{
           </label>
         )}
       </div>
-      <div className="form-control w-full">
-        <input
-          type="password"
-          placeholder="Password"
-          className={`input-bordered input ${
-            errors.password ? 'input-error' : ''
-          }`}
-          name="password"
-          value={values.password}
-          onChange={handleChange}
-        />
-        {errors.password && (
-          <label className="label pt-0">
-            <span className="label-text-alt text-red-600  ">
-              {errors.password}
-            </span>
-          </label>
-        )}
+      <PassInput
+        error={errors.password}
+        name="password"
+        placeholder="Password"
+        value={values.password}
+        handleChange={handleChange}
+      >
         <label className="label">
           <a
             href="#"
@@ -122,7 +112,7 @@ const Login: React.FC<{
             Forgot password?
           </a>
         </label>
-      </div>
+      </PassInput>
       <div className="form-control mb-8 w-full">
         <button
           className={`btn-primary btn ${isLoading ? 'loading' : ''}`}
