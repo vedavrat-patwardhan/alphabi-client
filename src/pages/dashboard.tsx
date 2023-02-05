@@ -7,6 +7,7 @@ import type { BaseSyntheticEvent } from 'react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 
+import SkeletonLoader from '@/components/SkeletonLoader';
 import { Meta } from '@/layouts/Meta';
 import { Main } from '@/templates/Main';
 
@@ -32,6 +33,7 @@ const Dashboard = () => {
     email: '',
     favorites: [],
   });
+  const [isLoading, setIsLoading] = useState(false);
   const [token, setToken] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
@@ -40,6 +42,7 @@ const Dashboard = () => {
   const gifCount = 6;
   const handleChange = (e: BaseSyntheticEvent) => {
     setQuery(e.target.value);
+    setIsLoading(true);
   };
   const debouncedResults = useMemo(() => {
     return debounce(handleChange, 500);
@@ -106,15 +109,17 @@ const Dashboard = () => {
         setLastPage(Math.floor(res.data.pagination.total_count / gifCount));
         setTotalCount(res.data.pagination.total_count);
         setGifs(res.data.data);
+        setIsLoading(false);
       })
       .catch((err) => {
         console.error(err);
+        setIsLoading(false);
       });
   }, [query, currentPage]);
 
   return (
     <Main meta={<Meta title="Dashboard" description="AlphaBi task" />}>
-      <div className="mx-auto w-4/5 pt-8">
+      <div className="mx-auto min-h-screen w-4/5 pt-8">
         <div className="mb-8 flex">
           <div className="input-group">
             <input
@@ -147,7 +152,17 @@ const Dashboard = () => {
         </div>
         {gifs.length === 0 && (
           <div className="flex items-center justify-center">
-            <h1 className="text-4xl">Type in search bar to find gifs</h1>
+            {isLoading ? (
+              <div className="mb-8 flex flex-wrap justify-between gap-2">
+                {Array(6)
+                  .fill('loader')
+                  .map((_item, i) => (
+                    <SkeletonLoader key={i} />
+                  ))}
+              </div>
+            ) : (
+              <h1 className="text-4xl">Type in search bar to find gifs</h1>
+            )}
           </div>
         )}
         <div className="mb-8 flex flex-wrap justify-between gap-2">

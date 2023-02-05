@@ -20,7 +20,7 @@ const Main = (props: IMainProps) => {
   return (
     <div data-theme={props.theme || appTheme}>
       {props.meta}
-      <div className="box-border h-screen w-screen">{props.children}</div>
+      <div className="box-border">{props.children}</div>
     </div>
   );
 };

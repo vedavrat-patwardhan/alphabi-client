@@ -23,6 +23,7 @@ const Login: React.FC<{
     password: '',
   };
   const [errors, setErrors] = useState({ ...initialValue });
+  const [isLoading, setIsLoading] = useState(false);
   const { values, handleChange } = useForm({ ...initialValue });
   const isValid = () => {
     const temp: FormValues = initialValue;
@@ -40,9 +41,11 @@ const Login: React.FC<{
   };
   const handleSubmit = () => {
     if (isValid()) {
+      setIsLoading(true);
       axios
         .post(`${process.env.BASE_URL}/v1/auth/login-user`, values)
         .then((res) => {
+          setIsLoading(false);
           sessionStorage.setItem('token', res.data.data.token);
           sessionStorage.setItem('user', JSON.stringify(res.data.data.data));
           notify();
@@ -50,6 +53,7 @@ const Login: React.FC<{
         })
         .catch((err) => {
           console.error(err);
+          setIsLoading(false);
           const msg = err.response.data.message;
           if (msg === 'User not found') {
             setErrors((prevVal) => ({
@@ -120,7 +124,10 @@ const Login: React.FC<{
         </label>
       </div>
       <div className="form-control mb-8 w-full">
-        <button className="btn-primary btn" onClick={handleSubmit}>
+        <button
+          className={`btn-primary btn ${isLoading ? 'loading' : ''}`}
+          onClick={handleSubmit}
+        >
           Login
         </button>
       </div>

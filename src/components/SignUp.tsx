@@ -24,6 +24,7 @@ const SignUp: React.FC<{
     password: '',
     confirmPassword: '',
   };
+  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({ ...initialValue });
   const { values, handleChange } = useForm({ ...initialValue });
   const isValid = () => {
@@ -46,6 +47,7 @@ const SignUp: React.FC<{
   };
   const handleSubmit = () => {
     if (isValid()) {
+      setIsLoading(true);
       axios
         .post(`${process.env.BASE_URL}/v1/auth/create-user`, {
           email: values.email,
@@ -54,11 +56,13 @@ const SignUp: React.FC<{
         .then((res) => {
           sessionStorage.setItem('token', res.data.data.token);
           sessionStorage.setItem('user', JSON.stringify(res.data.data.data));
+          setIsLoading(false);
           notify();
           push('/dashboard');
         })
         .catch((err) => {
           console.error(err);
+          setIsLoading(false);
           const msg = err.response.data.message;
           if (msg === 'This mailId is already registered') {
             setErrors((prevVal) => ({
@@ -130,7 +134,10 @@ const SignUp: React.FC<{
         )}
       </div>
       <div className="form-control mb-8 w-full">
-        <button className="btn-primary btn" onClick={handleSubmit}>
+        <button
+          className={`btn-primary btn ${isLoading ? 'loading' : ''}`}
+          onClick={handleSubmit}
+        >
           SignUp
         </button>
       </div>
