@@ -1,5 +1,10 @@
 @tailwind base;
 
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 a {
   @apply text-blue-700;
 }
@@ -20,28 +25,3 @@ a:hover {
   @apply my-6;
 }
 
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-.upload-field{
-  background: rgba(30, 71, 255, 0.1);
-  border: 1px dashed #1E47FF;
-  border-radius: 5px;
-  padding:11px 22px;
-  width: 100%;
-}
-.upload-field-error{
-  background: rgba(255, 30, 30, 0.1);
-  border: 1px dashed #ff1e1e;
-  border-radius: 5px;
-  padding:11px 22px;
-  width: 100%;
-}
-
-/* Firefox */
-input[type=number] {
-  -moz-appearance: textfield;
-}

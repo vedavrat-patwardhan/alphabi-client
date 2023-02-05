@@ -1,4 +1,8 @@
+import 'react-toastify/dist/ReactToastify.css';
+
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
 import validator from 'validator';
 
 import useForm from './useForm';
@@ -11,6 +15,8 @@ interface FormValues {
 const Login: React.FC<{
   updateHasAccount: () => void;
 }> = ({ updateHasAccount }) => {
+  const { push } = useRouter();
+  const notify = () => toast('Logged out Successfully!');
   const initialValue: FormValues = {
     email: '',
     password: '',
@@ -34,6 +40,8 @@ const Login: React.FC<{
   const handleSubmit = () => {
     if (isValid()) {
       console.log(values);
+      notify();
+      push('/dashboard');
     }
   };
   return (
@@ -102,6 +110,7 @@ const Login: React.FC<{
           Sign Up
         </button>
       </div>
+      <ToastContainer position="bottom-center" />
     </>
   );
 };
