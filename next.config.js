@@ -16,5 +16,6 @@ module.exports = withBundleAnalyzer({
   reactStrictMode: true,
   env: {
     GIFY_API_KEY: 'GlVGYHkr3WSBnllca54iNt0yFbjz7L65',
+    BASE_URL: 'https://alphabi.onrender.com',
   },
 });

@@ -1,5 +1,6 @@
 import 'react-toastify/dist/ReactToastify.css';
 
+import axios from 'axios';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
@@ -16,7 +17,7 @@ const Login: React.FC<{
   updateHasAccount: () => void;
 }> = ({ updateHasAccount }) => {
   const { push } = useRouter();
-  const notify = () => toast('Logged out Successfully!');
+  const notify = () => toast('Logged In Successfully!');
   const initialValue: FormValues = {
     email: '',
     password: '',
@@ -39,9 +40,31 @@ const Login: React.FC<{
   };
   const handleSubmit = () => {
     if (isValid()) {
-      console.log(values);
-      notify();
-      push('/dashboard');
+      axios
+        .post(`${process.env.BASE_URL}/v1/auth/login-user`, values)
+        .then((res) => {
+          sessionStorage.setItem('token', res.data.data.token);
+          sessionStorage.setItem('user', JSON.stringify(res.data.data.data));
+          notify();
+          push('/dashboard');
+        })
+        .catch((err) => {
+          console.error(err);
+          const msg = err.response.data.message;
+          if (msg === 'User not found') {
+            setErrors((prevVal) => ({
+              ...prevVal,
+              email:
+                'You are not registered with this email address. Please use another email address or sign up',
+            }));
+          }
+          if (msg === 'Invalid credentials') {
+            setErrors((prevVal) => ({
+              ...prevVal,
+              password: 'Password is incorrect',
+            }));
+          }
+        });
     }
   };
   return (

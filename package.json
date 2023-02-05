@@ -1,6 +1,6 @@
 {
-  "name": "next-js-boilerplate",
-  "version": "3.6.0",
+  "name": "alpha-bi-task",
+  "version": "1.0.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -21,7 +21,6 @@
     "postbuild": "next-sitemap"
   },
   "dependencies": {
-    "@azure/storage-blob": "^12.12.0",
     "axios": "^1.3.2",
     "daisyui": "^2.49.0",
     "lodash.debounce": "^4.0.8",
@@ -104,5 +103,5 @@
       "@semantic-release/github"
     ]
   },
-  "author": "Ixartz (https://github.com/ixartz)"
+  "author": "Vedavrat Patwardhan"
 }

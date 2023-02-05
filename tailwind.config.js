@@ -5,7 +5,7 @@ module.exports = {
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
   daisyui: {
     styled: true,
-    themes: ['light'],
+    themes: true,
     base: true,
     utils: true,
     logs: true,

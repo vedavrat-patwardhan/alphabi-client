@@ -26,7 +26,13 @@ interface GifyModel {
 const Dashboard = () => {
   const { push } = useRouter();
   const notify = () => toast('Logged out Successfully!');
+  const updateNotify = () => toast('Favorite updated');
   const [gifs, setGifs] = useState<GifyModel[]>([]);
+  const [user, setUser] = useState<{ email: string; favorites: string[] }>({
+    email: '',
+    favorites: [],
+  });
+  const [token, setToken] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -40,12 +46,51 @@ const Dashboard = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.clear();
+    sessionStorage.clear();
     notify();
     push('/');
   };
-
+  const updateFavorite = (id: string, isFavorite: boolean) => {
+    let updatedFavorites: string[] = [];
+    if (isFavorite) {
+      updatedFavorites = user.favorites.filter(
+        (favoriteId) => favoriteId !== id
+      );
+    } else {
+      updatedFavorites = [...user.favorites, id];
+    }
+    axios
+      .patch(
+        `${process.env.BASE_URL}/v1/auth/update-favorite`,
+        {
+          favorites: updatedFavorites,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then(() => {
+        setUser((prevVal) => ({ ...prevVal, favorites: updatedFavorites }));
+        sessionStorage.setItem(
+          'user',
+          JSON.stringify({ ...user, favorites: updatedFavorites })
+        );
+        updateNotify();
+      })
+      .catch((err) => console.error(err));
+  };
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (!sessionStorage.getItem('token')) {
+        push('/');
+      } else if (sessionStorage.getItem('user')) {
+        // @ts-ignore
+        setUser(JSON.parse(sessionStorage.getItem('user')));
+        setToken(sessionStorage.getItem('token')!);
+      }
+    }
     return () => {
       debouncedResults.cancel();
     };
@@ -69,18 +114,17 @@ const Dashboard = () => {
 
   return (
     <Main meta={<Meta title="Dashboard" description="AlphaBi task" />}>
-      <div className="mx-auto mt-8 w-4/5">
+      <div className="mx-auto w-4/5 pt-8">
         <div className="mb-8 flex">
           <div className="input-group">
             <input
               type="text"
               placeholder="Search Gif"
               name="query"
-              // value={query}
               onChange={debouncedResults}
               className="input-bordered input w-full"
             />
-            <button className="btn-square btn">
+            <button className="btn btn-square">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
@@ -97,10 +141,15 @@ const Dashboard = () => {
               </svg>
             </button>
           </div>
-          <button className="btn-secondary btn ml-8" onClick={handleLogout}>
+          <button className="btn btn-secondary ml-8" onClick={handleLogout}>
             Logout
           </button>
         </div>
+        {gifs.length === 0 && (
+          <div className="flex items-center justify-center">
+            <h1 className="text-4xl">Type in search bar to find gifs</h1>
+          </div>
+        )}
         <div className="mb-8 flex flex-wrap justify-between gap-2">
           {gifs.map((gif) => (
             <div
@@ -118,7 +167,16 @@ const Dashboard = () => {
                 <h2 className="card-title">{gif.title}</h2>
                 <p>{gif.user.description}</p>
                 <div className="card-actions justify-end">
-                  <button className="btn-primary btn">Add to favorite</button>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() =>
+                      updateFavorite(gif.id, user.favorites.includes(gif.id))
+                    }
+                  >
+                    {user.favorites.includes(gif.id)
+                      ? 'Remove from favorites'
+                      : 'Add to favorite'}
+                  </button>
                 </div>
               </div>
             </div>

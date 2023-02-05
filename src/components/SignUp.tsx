@@ -1,5 +1,6 @@
 import 'react-toastify/dist/ReactToastify.css';
 
+import axios from 'axios';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
@@ -17,7 +18,7 @@ const SignUp: React.FC<{
   updateHasAccount: () => void;
 }> = ({ updateHasAccount }) => {
   const { push } = useRouter();
-  const notify = () => toast('Logged out Successfully!');
+  const notify = () => toast('Account created Successfully!');
   const initialValue: FormValues = {
     email: '',
     password: '',
@@ -45,9 +46,27 @@ const SignUp: React.FC<{
   };
   const handleSubmit = () => {
     if (isValid()) {
-      console.log(values);
-      notify();
-      push('/dashboard');
+      axios
+        .post(`${process.env.BASE_URL}/v1/auth/create-user`, {
+          email: values.email,
+          password: values.password,
+        })
+        .then((res) => {
+          sessionStorage.setItem('token', res.data.data.token);
+          sessionStorage.setItem('user', JSON.stringify(res.data.data.data));
+          notify();
+          push('/dashboard');
+        })
+        .catch((err) => {
+          console.error(err);
+          const msg = err.response.data.message;
+          if (msg === 'This mailId is already registered') {
+            setErrors((prevVal) => ({
+              ...prevVal,
+              email: msg,
+            }));
+          }
+        });
     }
   };
   return (
